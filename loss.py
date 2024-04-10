@@ -12,3 +12,13 @@ class DiceLoss(torch.nn.Module):
         intersection = (y_pred * y_true).sum()
         dsc = (2. * intersection + self.smooth) / (y_pred.sum() + y_true.sum() + self.smooth)
         return 1. - dsc
+
+
+class DiceBCELoss(torch.nn.Module):
+    def __init__(self):
+        super(DiceBCELoss, self).__init__()
+        self.bce = torch.nn.BCELoss()
+        self.dice = DiceLoss()
+
+    def forward(self, y_pred, y_true):
+        return self.bce(y_pred, y_true) + self.dice(y_pred, y_true)
